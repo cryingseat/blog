@@ -307,6 +307,13 @@
             .sidebar { width: 100%; position: relative; top: 0; max-height: none; }
             .blob { opacity: 0.2; }
         }
+        .post-container {
+    background: #000;
+    color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+}
+
     </style>
 </head>
 <body>
@@ -408,50 +415,7 @@
             </div>
 
             <div id="posts-container">
-                <article class="glass-card blog-card">
-                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1352&q=80" alt="Code" class="post-image">
-                    <div class="post-content">
-                        <div class="post-meta">
-                            <span><i class="far fa-calendar"></i> 2023-10-27</span>
-                            <span class="post-tag">Tech</span>
-                        </div>
-                        <a href="#" class="post-title">Hello World: 重构我的个人博客</a>
-                        <p class="post-excerpt">
-                            终于完成了对博客的全面升级！这次加入了动态背景光斑、毛玻璃特效以及响应式设计。本文将分享我在重构过程中遇到的 CSS 兼容性问题...
-                        </p>
-                        <a href="#" class="btn-read">阅读全文</a>
-                    </div>
-                </article>
-
-                <article class="glass-card blog-card">
-                    <img src="https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Night" class="post-image">
-                    <div class="post-content">
-                        <div class="post-meta">
-                            <span><i class="far fa-calendar"></i> 2023-10-25</span>
-                            <span class="post-tag">Life</span>
-                        </div>
-                        <a href="#" class="post-title">深夜思考：关于极简主义</a>
-                        <p class="post-excerpt">
-                            为什么我们总是在做加法？不仅是物质生活，代码也是一样。Less is more 不仅仅是一句口号，更是一种生活哲学。今晚聊聊如何给生活做减法...
-                        </p>
-                        <a href="#" class="btn-read">阅读全文</a>
-                    </div>
-                </article>
-
-                <article class="glass-card blog-card">
-                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="AI" class="post-image">
-                    <div class="post-content">
-                        <div class="post-meta">
-                            <span><i class="far fa-calendar"></i> 2023-10-20</span>
-                            <span class="post-tag">AI</span>
-                        </div>
-                        <a href="#" class="post-title">AI 时代，普通程序员的出路在哪里？</a>
-                        <p class="post-excerpt">
-                            随着 ChatGPT 等工具的兴起，编写基础代码变得越来越容易。但这并不意味着程序员会失业，相反，我们需要掌握更高级的架构思维...
-                        </p>
-                        <a href="#" class="btn-read">阅读全文</a>
-                    </div>
-                </article>
+                <!-- 文章列表将由JS动态加载 -->
             </div>
         </main>
     </div>
@@ -548,6 +512,41 @@
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+    
+        // 自动加载文章列表
+async function loadPosts() {
+    const container = document.getElementById('posts-container');
+    container.innerHTML = "加载中...";
+
+    const res = await fetch("post.json");
+    const posts = await res.json();
+
+    container.innerHTML = "";
+
+    posts.forEach(post => {
+        container.innerHTML += `
+        <article class="glass-card blog-card">
+            <img src="${post.cover}" alt="${post.title}" class="post-image">
+            <div class="post-content">
+                <div class="post-meta">
+                    <span><i class="far fa-calendar"></i> ${post.date}</span>
+                    <span class="post-tag">${post.tag}</span>
+                </div>
+                <a href="${post.url}" class="post-title">${post.title}</a>
+                <p class="post-excerpt">${post.excerpt}</p>
+                <a href="${post.url}" class="btn-read">阅读全文</a>
+            </div>
+        </article>
+        `;
+    });
+}
+
+window.onload = function () {
+    typeWriter();
+    renderCalendar();
+    loadPosts();  
+};
+
     </script>
 </body>
 </html>
