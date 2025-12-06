@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryingseat | 个人空间</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* 主题色变量 */
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --csdn-color: linear-gradient(135deg, #fc5531 0%, #ff0000 100%); /* CSDN 专属红色渐变 */
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-secondary: #b0b0b0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* --- 动态背景光斑 --- */
+        .bg-blobs {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: #121212;
+        }
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 10s infinite alternate;
+        }
+        .blob-1 { width: 400px; height: 400px; background: #764ba2; top: -100px; left: -100px; }
+        .blob-2 { width: 300px; height: 300px; background: #667eea; bottom: -50px; right: -50px; animation-delay: -5s; }
+        .blob-3 { width: 200px; height: 200px; background: #ff758c; top: 40%; left: 40%; animation-duration: 15s; opacity: 0.2; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 50px); }
+        }
+
+        /* --- 导航栏 --- */
+        nav {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(18, 18, 18, 0.6);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo { font-size: 1.2rem; font-weight: bold; letter-spacing: 1px; }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: #fff; }
+
+        /* --- 主容器 --- */
+        .container {
+            max-width: 1100px;
+            margin: 100px auto 40px; 
+            padding: 0 20px;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+
+        /* --- 通用毛玻璃卡片 --- */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, background 0.3s;
+        }
+
+        /* --- 左侧边栏 --- */
+        .sidebar {
+            width: 320px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+        .profile-section {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .avatar-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+        }
+        .avatar {
+            width: 100%; height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255,255,255,0.2);
+        }
+        .status-dot {
+            position: absolute;
+            bottom: 5px; right: 5px;
+            width: 15px; height: 15px;
+            background: #2ecc71;
+            border-radius: 50%;
+            border: 2px solid #1a1a1a;
+        }
+
+        .gradient-text {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .typing-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            min-height: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+        }
+        .tech-stack i:hover { color: #fff; transform: scale(1.2); transition: 0.3s; }
+
+        /* 社交图标样式更新 */
+        .social-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px; /* 间距稍微调大一点 */
+            flex-wrap: wrap; /* 如果图标太多会自动换行 */
+        }
+        .social-icon {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; text-decoration: none;
+            transition: 0.3s;
+            font-size: 1.1rem;
+        }
+        /* 默认悬停颜色 */
+        .social-icon:hover { background: var(--primary-gradient); transform: translateY(-3px); }
+        
+        /* CSDN 专属悬停颜色 (红色) */
+        .social-icon.csdn:hover { background: var(--csdn-color); }
+
+        .widget-title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            color: #888;
+        }
+        .category-list { list-style: none; }
+        .category-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .category-list li:hover { color: #fff; }
+
+        /* --- 日历样式 --- */
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .current-month { color: #fff; }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .weekday { color: #888; font-size: 0.75rem; margin-bottom: 5px; }
+        .calendar-day {
+            padding: 6px 0; border-radius: 8px; cursor: default;
+            color: var(--text-secondary); transition: 0.2s;
+        }
+        .calendar-day:hover:not(.empty) { background: rgba(255,255,255,0.1); color: #fff; }
+        .calendar-day.today {
+            background: var(--primary-gradient);
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(118, 75, 162, 0.4);
+            font-weight: bold;
+        }
+        .calendar-day.empty { pointer-events: none; }
+
+
+        /* --- 右侧主要内容 --- */
+        .main-content { flex: 1; width: 0; }
+
+        .search-box { position: relative; margin-bottom: 30px; }
+        .search-input {
+            width: 100%; padding: 15px 20px 15px 45px;
+            border-radius: 50px; border: none;
+            background: rgba(255,255,255,0.05);
+            color: #fff; font-size: 1rem; outline: none;
+            backdrop-filter: blur(5px);
+            border: 1px solid transparent; transition: 0.3s;
+        }
+        .search-input:focus {
+            background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 0 15px rgba(118, 75, 162, 0.3);
+        }
+        .search-icon {
+            position: absolute; left: 18px; top: 50%;
+            transform: translateY(-50%); color: #888;
+        }
+
+        .blog-card {
+            padding: 0; margin-bottom: 30px; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .blog-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.12); }
+        .post-image { height: 180px; width: 100%; object-fit: cover; }
+        .post-content { padding: 25px; }
+        .post-meta {
+            font-size: 0.8rem; color: #888; margin-bottom: 10px;
+            display: flex; gap: 15px;
+        }
+        .post-tag {
+            background: rgba(118, 75, 162, 0.3); color: #d6bcfa;
+            padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;
+        }
+        .post-title {
+            font-size: 1.5rem; margin-bottom: 12px; color: #fff;
+            text-decoration: none; display: block; transition: 0.3s;
+        }
+        .post-title:hover { color: #764ba2; }
+        .post-excerpt {
+            color: var(--text-secondary); line-height: 1.7;
+            margin-bottom: 20px; font-size: 0.95rem;
+        }
+        .btn-read {
+            display: inline-block; padding: 8px 20px; border-radius: 20px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.3);
+            color: #fff; text-decoration: none; font-size: 0.9rem; transition: 0.3s;
+        }
+        .btn-read:hover { background: #fff; color: #000; }
+
+        .back-to-top {
+            position: fixed; bottom: 30px; right: 30px;
+            width: 45px; height: 45px; background: var(--primary-gradient);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: #fff; cursor: pointer; opacity: 0; pointer-events: none;
+            transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 99;
+        }
+        .back-to-top.show { opacity: 1; pointer-events: all; }
+        .back-to-top:hover { transform: translateY(-5px); }
+
+        footer {
+            text-align: center; padding: 40px; color: #666;
+            font-size: 0.9rem; border-top: 1px solid var(--glass-border);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; position: relative; top: 0; max-height: none; }
+            .blob { opacity: 0.2; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <nav>
+        <div class="logo"><i class="fas fa-terminal"></i> CRYINGSEAT</div>
+        <div class="nav-links">
+            <a href="#" class="active">首页</a>
+            <a href="#">归档</a>
+            <a href="#">关于</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <!-- 左侧侧边栏 -->
+        <aside class="sidebar">
+            <div class="glass-card profile-section">
+                <div class="avatar-container">
+                    <img src="./loqixi.jpg" alt="头像" class="avatar">
+                    <div class="status-dot" title="Online"></div>
+                </div>
+                
+                <h1 class="gradient-text">cryingseat</h1>
+                <p class="typing-text" id="typing-effect"></p>
+
+                <div class="tech-stack">
+                    <i class="fab fa-html5" title="HTML5"></i>
+                    <i class="fab fa-css3-alt" title="CSS3"></i>
+                    <i class="fab fa-js" title="JavaScript"></i>
+                    <i class="fab fa-python" title="Python"></i>
+                </div>
+
+                <div class="social-row">
+                    <!-- 微博 -->
+                    <a href="https://weibo.com/u/7244955417" target="_blank" class="social-icon" title="微博">
+                        <i class="fab fa-weibo"></i>
+                    </a>
+                    <!-- GitHub -->
+                    <a href="https://github.com/cryingseat" target="_blank" class="social-icon" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <!-- CSDN (新加入) -->
+                    <!-- 记得把 href 里的链接换成你自己的 CSDN 主页链接 -->
+                    <a href="https://blog.csdn.net/2502_93374791?spm=1000.2115.3001.5343" target="_blank" class="social-icon csdn" title="CSDN">
+                        <i class="far fa-copyright"></i>
+                    </a>
+                    <!-- Twitter -->
+                    <a href="https://x.com/cryingdate" target="_blank" class="social-icon" title="Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 分类小部件 -->
+            <div class="glass-card" style="padding: 20px;">
+                <h3 class="widget-title">分类 Topics</h3>
+                <ul class="category-list">
+                    <li><span>💻 技术笔记</span> <span>12</span></li>
+                    <li><span>☕ 生活随想</span> <span>5</span></li>
+                    <li><span>📚 阅读清单</span> <span>3</span></li>
+                    <li><span>🎮 游戏杂谈</span> <span>8</span></li>
+                </ul>
+            </div>
+
+            <!-- 日历小部件 -->
+            <div class="glass-card" style="padding: 20px;">
+                <div class="calendar-header">
+                    <span class="current-month" id="calendar-month-year">Month Year</span>
+                </div>
+                <div class="calendar-grid">
+                    <div class="weekday">日</div>
+                    <div class="weekday">一</div>
+                    <div class="weekday">二</div>
+                    <div class="weekday">三</div>
+                    <div class="weekday">四</div>
+                    <div class="weekday">五</div>
+                    <div class="weekday">六</div>
+                </div>
+                <div class="calendar-grid" id="calendar-days">
+                    <!-- JS will populate days here -->
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- 右侧主内容 -->
+        <main class="main-content">
+            
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" id="search-input" placeholder="输入关键词搜索文章...">
+            </div>
+
+            <div id="posts-container">
+                <article class="glass-card blog-card">
+                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=1352&q=80" alt="Code" class="post-image">
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span><i class="far fa-calendar"></i> 2023-10-27</span>
+                            <span class="post-tag">Tech</span>
+                        </div>
+                        <a href="#" class="post-title">Hello World: 重构我的个人博客</a>
+                        <p class="post-excerpt">
+                            终于完成了对博客的全面升级！这次加入了动态背景光斑、毛玻璃特效以及响应式设计。本文将分享我在重构过程中遇到的 CSS 兼容性问题...
+                        </p>
+                        <a href="#" class="btn-read">阅读全文</a>
+                    </div>
+                </article>
+
+                <article class="glass-card blog-card">
+                    <img src="https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Night" class="post-image">
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span><i class="far fa-calendar"></i> 2023-10-25</span>
+                            <span class="post-tag">Life</span>
+                        </div>
+                        <a href="#" class="post-title">深夜思考：关于极简主义</a>
+                        <p class="post-excerpt">
+                            为什么我们总是在做加法？不仅是物质生活，代码也是一样。Less is more 不仅仅是一句口号，更是一种生活哲学。今晚聊聊如何给生活做减法...
+                        </p>
+                        <a href="#" class="btn-read">阅读全文</a>
+                    </div>
+                </article>
+
+                <article class="glass-card blog-card">
+                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="AI" class="post-image">
+                    <div class="post-content">
+                        <div class="post-meta">
+                            <span><i class="far fa-calendar"></i> 2023-10-20</span>
+                            <span class="post-tag">AI</span>
+                        </div>
+                        <a href="#" class="post-title">AI 时代，普通程序员的出路在哪里？</a>
+                        <p class="post-excerpt">
+                            随着 ChatGPT 等工具的兴起，编写基础代码变得越来越容易。但这并不意味着程序员会失业，相反，我们需要掌握更高级的架构思维...
+                        </p>
+                        <a href="#" class="btn-read">阅读全文</a>
+                    </div>
+                </article>
+            </div>
+        </main>
+    </div>
+
+    <div class="back-to-top" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Cryingseat. Built with <i class="fas fa-heart" style="color:#ff758c"></i> & Code.</p>
+    </footer>
+
+    <script>
+        // 打字机特效
+        const textToType = "Live well. Keep coding. Stay curious.";
+        const typingElement = document.getElementById('typing-effect');
+        let i = 0;
+
+        function typeWriter() {
+            if (i < textToType.length) {
+                typingElement.innerHTML += textToType.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        }
+
+        // 日历功能
+        function renderCalendar() {
+            const date = new Date();
+            const currentYear = date.getFullYear();
+            const currentMonth = date.getMonth(); 
+            const currentDay = date.getDate();
+
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            
+            document.getElementById('calendar-month-year').innerText = `${monthNames[currentMonth]} ${currentYear}`;
+
+            const daysContainer = document.getElementById('calendar-days');
+            daysContainer.innerHTML = "";
+
+            const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+            const lastDay = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            for (let x = 0; x < firstDayIndex; x++) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.classList.add('calendar-day', 'empty');
+                daysContainer.appendChild(emptyDiv);
+            }
+
+            for (let d = 1; d <= lastDay; d++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.innerText = d;
+                dayDiv.classList.add('calendar-day');
+                if (d === currentDay) {
+                    dayDiv.classList.add('today');
+                }
+                daysContainer.appendChild(dayDiv);
+            }
+        }
+
+        window.onload = function() {
+            typeWriter();
+            renderCalendar();
+        };
+
+        // 搜索功能
+        const searchInput = document.getElementById('search-input');
+        const posts = document.querySelectorAll('.blog-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            posts.forEach(post => {
+                const title = post.querySelector('.post-title').innerText.toLowerCase();
+                const excerpt = post.querySelector('.post-excerpt').innerText.toLowerCase();
+                if (title.includes(term) || excerpt.includes(term)) {
+                    post.style.display = 'flex';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+        });
+
+        // 回到顶部
+        const backToTopBtn = document.querySelector('.back-to-top');
+        window.onscroll = function() {
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                backToTopBtn.classList.add('show');
+            } else {
+                backToTopBtn.classList.remove('show');
+            }
+        };
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
