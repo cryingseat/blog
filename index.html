@@ -302,11 +302,118 @@
             margin-top: 40px;
         }
 
-        @media (max-width: 768px) {
-            .container { flex-direction: column; }
-            .sidebar { width: 100%; position: relative; top: 0; max-height: none; }
-            .blob { opacity: 0.2; }
-        }
+     /* --- 移动端适配 (把这段加到 style 最后) --- */
+@media (max-width: 768px) {
+    /* 1. 导航栏变身 */
+    nav {
+        padding: 15px 20px;
+        justify-content: space-between;
+    }
+
+    .menu-toggle {
+        display: block; /* 显示菜单按钮 */
+        font-size: 1.5rem;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    /* 默认隐藏导航链接，点击后显示 */
+    .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(20, 20, 20, 0.95); /* 深色背景 */
+        backdrop-filter: blur(15px);
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        
+        /* 动画状态 */
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-20px);
+        transition: 0.3s ease;
+    }
+
+    /* JS 激活时的类名 */
+    .nav-links.active {
+        opacity: 1;
+        pointer-events: all;
+        transform: translateY(0);
+    }
+
+    .nav-links a {
+        margin: 15px 0;
+        font-size: 1.1rem;
+        display: block;
+    }
+
+    /* 2. 布局调整：上下堆叠 */
+    .container {
+        margin-top: 80px; /* 减小顶部距离 */
+        flex-direction: column; /* 垂直排列 */
+        gap: 20px;
+    }
+
+    /* 3. 侧边栏调整 */
+    .sidebar {
+        width: 100%;
+        position: static; /* 取消固定定位 */
+        max-height: none;
+        overflow: visible;
+    }
+
+    /* 侧边栏里的卡片不用那么大边距 */
+    .profile-section {
+        padding: 20px;
+    }
+
+    /* 隐藏一些手机端不需要的侧边栏组件，节省空间 (可选) */
+    /* 比如：在手机上隐藏日历，保留头像和社交链接 */
+    /* .calendar-grid, .calendar-header { display: none; } */
+
+    /* 4. 文章卡片调整 */
+    .blog-card {
+        margin-bottom: 20px;
+    }
+
+    .post-image {
+        height: 160px; /* 图片高度稍微改小 */
+    }
+
+    .post-content {
+        padding: 20px;
+    }
+
+    .post-title {
+        font-size: 1.3rem;
+    }
+    
+    .post-excerpt {
+        font-size: 0.9rem;
+        /* 手机上限制摘要行数，防止太长 */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* 5. 搜索框调整 */
+    .search-input {
+        padding: 12px 20px 12px 40px;
+        font-size: 0.9rem;
+    }
+    .search-icon {
+        left: 15px;
+    }
+}
+
+/* PC 端默认隐藏菜单按钮 */
+.menu-toggle {
+    display: none;
+}
         .post-container {
     background: #000;
     color: #fff;
@@ -324,14 +431,20 @@
         <div class="blob blob-3"></div>
     </div>
 
-    <nav>
-        <div class="logo"><i class="fas fa-terminal"></i> CRYINGSEAT</div>
-        <div class="nav-links">
-            <a href="#" class="active">首页</a>
-            <a href="#">归档</a>
-            <a href="#">关于</a>
-        </div>
-    </nav>
+   <nav>
+    <div class="logo"><i class="fas fa-terminal"></i> CRYINGSEAT</div>
+    
+    <!-- [新增] 手机端菜单按钮 -->
+    <div class="menu-toggle" id="mobile-menu-btn">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <div class="nav-links" id="nav-links">
+        <a href="#" class="active">首页</a>
+        <a href="#">归档</a>
+        <a href="#">关于</a>
+    </div>
+</nav>
 
     <div class="container">
         
@@ -546,7 +659,36 @@ window.onload = function () {
     renderCalendar();
     loadPosts();  
 };
+// --- 移动端菜单控制逻辑 ---
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const navLinks = document.getElementById('nav-links');
 
+    if (menuBtn) {
+        menuBtn.addEventListener('click', () => {
+            // 切换 active 类，实现显示/隐藏
+            navLinks.classList.toggle('active');
+            
+            // 切换图标样式 (可选：把汉堡变成叉叉)
+            const icon = menuBtn.querySelector('i');
+            if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+    }
+
+    // 点击链接后自动收起菜单
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+            navLinks.classList.remove('active');
+            const icon = menuBtn.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+        });
+    });
     </script>
 </body>
 </html>
