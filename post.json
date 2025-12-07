@@ -1,11 +1,12 @@
 [
     {
-        "id": "hello-world",
+        "id": 1,
         "title": "Hello World: 重构我的个人博客",
         "date": "2023-10-27",
-        "tag": "Tech",
-        "cover": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?...",
-        "excerpt": "终于完成了对博客的全面升级...",
-        "url": "posts/hello-world.html"
+        "excerpt": "终于完成了博客的全面升级，我想聊聊背后的设计过程...",
+        "cover": "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+        "tag": "随笔",
+        "fileName": "hello-world.html",
+        "theme": { "backgroundColor": "#000000" }
     }
 ]
