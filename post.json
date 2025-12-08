@@ -1,9 +1,9 @@
 [
     {
         "id": 1,
-        "title": "Hello World: 重构我的个人博客",
-        "date": "2023-10-27",
-        "excerpt": "终于完成了博客的全面升级，我想聊聊背后的设计过程...",
+        "title": "Hello World",
+        "date": "2025-12-8",
+        "excerpt": "我想聊聊c语言……",
         "cover": "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
         "tag": "随笔",
         "fileName": "hello-world.html",
